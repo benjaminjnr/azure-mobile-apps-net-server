@@ -5,7 +5,7 @@
 namespace Microsoft.Azure.Mobile.Server
 {
     using System;
-    using System.IdentityModel.Tokens;
+    using Microsoft.IdentityModel.Tokens;
 
     internal class HmacSigningCredentials : SigningCredentials
     {
@@ -15,7 +15,7 @@ namespace Microsoft.Azure.Mobile.Server
         }
 
         public HmacSigningCredentials(byte[] key)
-            : base(new InMemorySymmetricSecurityKey(key), CreateSignatureAlgorithm(key), CreateDigestAlgorithm(key))
+            : base(new SymmetricSecurityKey(key), CreateSignatureAlgorithm(key))//, CreateDigestAlgorithm(key))
         {
         }
 

@@ -5,9 +5,11 @@
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.ServiceModel.Security.Tokens;
 using System.Web.Http;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -121,13 +123,19 @@ namespace Microsoft.Azure.Mobile.Server.Authentication
             {
                 claimsPrincipal = ValidateToken(validationParameters, tokenValue, secretKey);
             }
-            catch (SecurityTokenException)
-            {
-                // can happen if the token fails validation for any reason,
-                // e.g. wrong signature, etc.
-                return false;
-            }
-            catch (ArgumentException)
+			catch (System.IdentityModel.Tokens.SecurityTokenException)
+			{
+				// can happen if the token fails validation for any reason,
+				// e.g. wrong signature, etc.
+				return false;
+			}
+			catch (Microsoft.IdentityModel.Tokens.SecurityTokenException)
+			{
+				// can happen if the token fails validation for any reason,
+				// e.g. wrong signature, etc.
+				return false;
+			}
+			catch (ArgumentException)
             {
                 // happens if the token cannot even be read
                 // i.e. it is malformed
@@ -185,12 +193,11 @@ namespace Microsoft.Azure.Mobile.Server.Authentication
 
         internal static ClaimsPrincipal ValidateToken(TokenValidationParameters validationParams, string tokenString, string secretKey)
         {
-            validationParams.IssuerSigningToken = new BinarySecretSecurityToken(HmacSigningCredentials.ParseKeyString(secretKey));
+            validationParams.IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(HmacSigningCredentials.ParseKeyString(secretKey));
 
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken validatedToken = null;
 
-            return tokenHandler.ValidateToken(tokenString, validationParams, out validatedToken);
+            return tokenHandler.ValidateToken(tokenString, validationParams, out Microsoft.IdentityModel.Tokens.SecurityToken validatedToken);
         }
 
         /// <summary>

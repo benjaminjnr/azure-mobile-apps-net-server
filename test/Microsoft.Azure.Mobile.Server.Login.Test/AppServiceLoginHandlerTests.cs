@@ -2,8 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // ----------------------------------------------------------------------------
 
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.ServiceModel.Security.Tokens;
@@ -133,12 +135,11 @@ namespace Microsoft.Azure.Mobile.Server.Login.Test
                 ValidateIssuer = true,
                 ValidIssuer = Issuer,
                 ValidateLifetime = parsedToken.Payload.Exp.HasValue,  // support tokens with no expiry
-                IssuerSigningToken = new BinarySecretSecurityToken(HmacSigningCredentials.ParseKeyString(SigningKey))
+                IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(HmacSigningCredentials.ParseKeyString(SigningKey))
             };
 
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken validatedToken = null;
-            tokenHandler.ValidateToken(tokenString, validationParams, out validatedToken);
+            tokenHandler.ValidateToken(tokenString, validationParams, out Microsoft.IdentityModel.Tokens.SecurityToken validatedToken);
         }
     }
 }
