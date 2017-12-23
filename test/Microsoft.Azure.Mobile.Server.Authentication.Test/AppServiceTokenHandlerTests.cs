@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Protocols.WSTrust;
 using System.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Web.Http;
 using Microsoft.Azure.Mobile.Server.Authentication;
@@ -135,7 +136,7 @@ namespace Microsoft.Azure.Mobile.Server.Security
         /// to generate the token, substituting a far out expiry.
         /// </summary>
         [Theory]
-        [MemberData("TokenData")]
+        [MemberData(nameof(TokenData))]
         public void TryValidateLoginToken_AcceptsPreviousTokenVersions(string tokenValue)
         {
             AppServiceAuthenticationOptions options = this.CreateTestOptions();
@@ -184,7 +185,7 @@ namespace Microsoft.Azure.Mobile.Server.Security
         }
 
         [Theory]
-        [MemberData("CreateUserIdData")]
+        [MemberData(nameof(CreateUserIdData))]
         public void CreateUserId_FormatsCorrectly(string providerName, string providerId)
         {
             // Arrange
@@ -204,7 +205,7 @@ namespace Microsoft.Azure.Mobile.Server.Security
         }
 
         [Theory]
-        [MemberData("ParseUserIdData")]
+        [MemberData(nameof(ParseUserIdData))]
         public void TryParseUserId(string userId, bool expected, string providerName, string providerId)
         {
             // Arrange
@@ -230,7 +231,7 @@ namespace Microsoft.Azure.Mobile.Server.Security
             DateTime tokenCreationDateInFuture = DateTime.UtcNow + new TimeSpan(1, 0, 0);
             DateTime tokenExpiryDate = tokenCreationDateInFuture + lifetimeFiveMinute;
 
-            SecurityTokenDescriptor tokenDescriptor = this.GetTestSecurityTokenDescriptor(tokenCreationDateInFuture, tokenExpiryDate, audience, issuer);
+			Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor tokenDescriptor = this.GetTestSecurityTokenDescriptor(tokenCreationDateInFuture, tokenExpiryDate, audience, issuer);
 
             JwtSecurityTokenHandler securityTokenHandler = new JwtSecurityTokenHandler();
             JwtSecurityToken token = securityTokenHandler.CreateToken(tokenDescriptor) as JwtSecurityToken;
@@ -252,7 +253,7 @@ namespace Microsoft.Azure.Mobile.Server.Security
             DateTime tokenCreationDate = DateTime.UtcNow + new TimeSpan(-1, 0, 0);
             DateTime tokenExpiryDate = tokenCreationDate + lifetime;
 
-            SecurityTokenDescriptor tokenDescriptor = this.GetTestSecurityTokenDescriptor(tokenCreationDate, tokenExpiryDate, audience, issuer);
+			Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor tokenDescriptor = this.GetTestSecurityTokenDescriptor(tokenCreationDate, tokenExpiryDate, audience, issuer);
 
             JwtSecurityTokenHandler securityTokenHandler = new JwtSecurityTokenHandler();
             JwtSecurityToken token = securityTokenHandler.CreateToken(tokenDescriptor) as JwtSecurityToken;
@@ -276,15 +277,15 @@ namespace Microsoft.Azure.Mobile.Server.Security
             DateTime tokenCreationDate = DateTime.UtcNow;
             DateTime tokenExpiryDate = tokenCreationDate + lifetime;
 
-            SecurityTokenDescriptor tokenDescriptor = this.GetTestSecurityTokenDescriptor(tokenCreationDate, tokenExpiryDate, audience, issuer);
-            tokenDescriptor.TokenIssuerName = string.Empty;
+			Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor tokenDescriptor = this.GetTestSecurityTokenDescriptor(tokenCreationDate, tokenExpiryDate, audience, issuer);
+            tokenDescriptor.Issuer = string.Empty;
 
             JwtSecurityTokenHandler securityTokenHandler = new JwtSecurityTokenHandler();
             JwtSecurityToken token = securityTokenHandler.CreateToken(tokenDescriptor) as JwtSecurityToken;
 
-            // Act
-            SecurityTokenInvalidIssuerException ex = Assert.Throws<SecurityTokenInvalidIssuerException>(() =>
-               AppServiceTokenHandler.ValidateToken(token.RawData, this.testSecretKey, audience, issuer));
+			// Act
+			Microsoft.IdentityModel.Tokens.SecurityTokenInvalidIssuerException ex = 
+				Assert.Throws<Microsoft.IdentityModel.Tokens.SecurityTokenInvalidIssuerException>(() => AppServiceTokenHandler.ValidateToken(token.RawData, this.testSecretKey, audience, issuer));
 
             // Assert
             Assert.Contains("IDX10211: Unable to validate issuer. The 'issuer' parameter is null or whitespace", ex.Message, StringComparison.Ordinal);
@@ -300,7 +301,7 @@ namespace Microsoft.Azure.Mobile.Server.Security
             DateTime tokenCreationDate = DateTime.UtcNow;
             DateTime tokenExpiryDate = tokenCreationDate + lifetime;
 
-            SecurityTokenDescriptor tokenDescriptor = this.GetTestSecurityTokenDescriptor(tokenCreationDate, tokenExpiryDate, audience, issuer);
+			Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor tokenDescriptor = this.GetTestSecurityTokenDescriptor(tokenCreationDate, tokenExpiryDate, audience, issuer);
 
             JwtSecurityTokenHandler securityTokenHandler = new JwtSecurityTokenHandler();
             JwtSecurityToken token = securityTokenHandler.CreateToken(tokenDescriptor) as JwtSecurityToken;
@@ -320,7 +321,7 @@ namespace Microsoft.Azure.Mobile.Server.Security
             DateTime tokenCreationDate = DateTime.UtcNow;
             DateTime tokenExpiryDate = tokenCreationDate + lifetime;
 
-            SecurityTokenDescriptor tokenDescriptor = this.GetTestSecurityTokenDescriptor(tokenCreationDate, tokenExpiryDate, audience, issuer);
+			Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor tokenDescriptor = this.GetTestSecurityTokenDescriptor(tokenCreationDate, tokenExpiryDate, audience, issuer);
 
             JwtSecurityTokenHandler securityTokenHandler = new JwtSecurityTokenHandler();
             JwtSecurityToken token = securityTokenHandler.CreateToken(tokenDescriptor) as JwtSecurityToken;
@@ -333,7 +334,7 @@ namespace Microsoft.Azure.Mobile.Server.Security
             Assert.Contains("IDX10708: 'System.IdentityModel.Tokens.JwtSecurityTokenHandler' cannot read this string", ex.Message, StringComparison.Ordinal);
         }
 
-        private SecurityTokenDescriptor GetTestSecurityTokenDescriptor(DateTime tokenLifetimeStart, DateTime tokenLifetimeEnd, string audience, string issuer)
+        private Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor GetTestSecurityTokenDescriptor(DateTime tokenLifetimeStart, DateTime tokenLifetimeEnd, string audience, string issuer)
         {
             List<Claim> claims = new List<Claim>()
             {
@@ -341,12 +342,13 @@ namespace Microsoft.Azure.Mobile.Server.Security
                 new Claim("ver", "2"),
             };
 
-            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
+			Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor tokenDescriptor = new Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor
             {
-                AppliesToAddress = audience,
-                TokenIssuerName = issuer,
+                Audience = audience,
+                Issuer = issuer,
                 SigningCredentials = new HmacSigningCredentials(this.testSecretKey),
-                Lifetime = new Lifetime(tokenLifetimeStart, tokenLifetimeEnd),
+				IssuedAt = tokenLifetimeStart,
+                Expires = tokenLifetimeEnd,
                 Subject = new ClaimsIdentity(claims),
             };
 

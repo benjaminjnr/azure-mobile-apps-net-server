@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
@@ -112,15 +113,16 @@ namespace Microsoft.WindowsAzure.Mobile.Service
             Assert.Null(tagsOutput);
         }
 
-        private static Installation MakeTestInstallation()
+#pragma warning disable CS0612 // Type or member is obsolete
+		private static Installation MakeTestInstallation()
         {
             return new Installation
             {
                 InstallationId = TestGuidValid,
                 Platform = NotificationPlatform.Wns,
                 PushChannel = WnsPushChannelValid,
-                SecondaryTiles = new Dictionary<string, WnsSecondaryTile>
-                {
+				SecondaryTiles = new Dictionary<string, WnsSecondaryTile>
+				{
                     {
                         "tileName",
                         new WnsSecondaryTile
@@ -158,8 +160,9 @@ namespace Microsoft.WindowsAzure.Mobile.Service
                 }
             };
         }
+#pragma warning restore CS0612 // Type or member is obsolete
 
-        [Theory]
+		[Theory]
         [InlineData("apns")]
         [InlineData("gcm")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Wns", Justification = "Wns is fine")]
@@ -445,7 +448,8 @@ namespace Microsoft.WindowsAzure.Mobile.Service
             Assert.True(testPass);
         }
 
-        [Theory]
+#pragma warning disable CS0612 // Type or member is obsolete
+		[Theory]
         [InlineData(WnsPushChannelValid, WindowsNotificationServiceString, NotificationPlatform.Wns)]
         [InlineData(ApnsTokenValid, AppleNotificationServiceString, NotificationPlatform.Apns)]
         [InlineData(GcmToken, GcmNotificationServiceString, NotificationPlatform.Gcm)]
@@ -537,8 +541,9 @@ namespace Microsoft.WindowsAzure.Mobile.Service
             // Tags were stripped within the template
             Assert.Equal(0, testInstallation.Templates[installationTemplateName].Tags.Count);
         }
+#pragma warning restore CS0612 // Type or member is obsolete
 
-        [Fact]
+		[Fact]
         public async Task PutInstallations_RegistersUserId_IfAuthenticated()
         {
             // Arrange
@@ -566,7 +571,7 @@ namespace Microsoft.WindowsAzure.Mobile.Service
             Assert.NotNull(installation);
             Assert.Equal(notification.InstallationId, installation.InstallationId);
             Assert.Equal(notification.PushChannel, installation.PushChannel);
-            Assert.Equal(1, installation.Tags.Count());
+            Assert.Single(installation.Tags);
             Assert.Equal("_UserId:my:userid", installation.Tags[0]);
         }
 

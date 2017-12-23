@@ -26,7 +26,7 @@ namespace Microsoft.Azure.Mobile.Server.Internal
         }
 
         [Theory]
-        [MemberData("HashsetValues")]
+        [MemberData(nameof(HashsetValues))]
         public void Add_ReturnsTrue_WhenItemAddedFirstTime<T>(T value)
         {
             // Arrange
@@ -40,8 +40,8 @@ namespace Microsoft.Azure.Mobile.Server.Internal
         }
 
         [Theory]
-        [MemberData("HashsetValues")]
-        public void Add_ReturnsFalse_WhenItemAlreadyPresent<T>(T value)
+		[MemberData(nameof(HashsetValues))]
+		public void Add_ReturnsFalse_WhenItemAlreadyPresent<T>(T value)
         {
             // Arrange
             ConcurrentHashset<T> set = new ConcurrentHashset<T>();

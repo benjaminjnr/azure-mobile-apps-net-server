@@ -48,7 +48,7 @@ namespace Microsoft.Azure.Mobile.Server.Tables
         }
 
         [Theory]
-        [MemberData("ControllerAddresses")]
+        [MemberData(nameof(ControllerAddresses))]
         public async Task GetFilters_AddsTableFilterBeforeQueryFilter_OnGetActions(string address)
         {
             // Act
@@ -59,7 +59,7 @@ namespace Microsoft.Azure.Mobile.Server.Tables
         }
 
         [Theory]
-        [MemberData("ControllerAddresses")]
+        [MemberData(nameof(ControllerAddresses))]
         public async Task GetFilters_AddsTableFilterBeforeQueryFilter_OnPostActions(string address)
         {
             // Act
@@ -95,8 +95,11 @@ namespace Microsoft.Azure.Mobile.Server.Tables
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        public static void ValidateFilterPipeline(HttpActionDescriptor actionDescriptor, bool isQueryable)
-        {
+		[Theory]
+#pragma warning disable xUnit1003 // Theory methods must have test data
+		public static void ValidateFilterPipeline(HttpActionDescriptor actionDescriptor, bool isQueryable)
+#pragma warning restore xUnit1003 // Theory methods must have test data
+		{
             Collection<FilterInfo> filters = actionDescriptor.GetFilterPipeline();
             if (isQueryable)
             {

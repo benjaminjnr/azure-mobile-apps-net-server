@@ -198,8 +198,11 @@ namespace Microsoft.Azure.Mobile.Server
             Assert.Equal("Bill & Ted's Excellent Adventure", result["name"]);
         }
         
-        public static void ValidateAllSystemProperties(JObject result)
-        {
+		[Theory]
+#pragma warning disable xUnit1003 // Theory methods must have test data
+		public static void ValidateAllSystemProperties(JObject result)
+#pragma warning restore xUnit1003 // Theory methods must have test data
+		{
             foreach (var sysProp in TableHttpRequestMessageExtensions.SystemProperties)
             {
                 Assert.NotNull(result[sysProp.Key]);
@@ -207,8 +210,11 @@ namespace Microsoft.Azure.Mobile.Server
             }
         }
 
-        public static void ValidateNoSystemProperties(JObject result)
-        {
+		[Theory]
+#pragma warning disable xUnit1003 // Theory methods must have test data
+		public static void ValidateNoSystemProperties(JObject result)
+#pragma warning restore xUnit1003 // Theory methods must have test data
+		{
             foreach (var sysProp in TableHttpRequestMessageExtensions.SystemProperties)
             {
                 Assert.Null(result[sysProp.Key]);

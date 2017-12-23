@@ -5,11 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.ServiceModel.Security.Tokens;
 using System.Web.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using TokenValidationParameters = Microsoft.IdentityModel.Tokens.TokenValidationParameters;
 
 namespace Microsoft.Azure.Mobile.Server.Authentication
 {
@@ -185,13 +187,12 @@ namespace Microsoft.Azure.Mobile.Server.Authentication
 
         internal static ClaimsPrincipal ValidateToken(TokenValidationParameters validationParams, string tokenString, string secretKey)
         {
-            validationParams.IssuerSigningToken = new BinarySecretSecurityToken(HmacSigningCredentials.ParseKeyString(secretKey));
+            validationParams.IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(HmacSigningCredentials.ParseKeyString(secretKey));
 
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken validatedToken = null;
 
-            return tokenHandler.ValidateToken(tokenString, validationParams, out validatedToken);
-        }
+			return tokenHandler.ValidateToken(tokenString, validationParams, out Microsoft.IdentityModel.Tokens.SecurityToken validatedToken);
+		}
 
         /// <summary>
         /// Returns the serialized JSON for this credentials object that should

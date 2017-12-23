@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IdentityModel.Protocols.WSTrust;
 using System.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using Microsoft.Azure.Mobile.Server.Properties;
@@ -58,12 +59,13 @@ namespace Microsoft.Azure.Mobile.Server.Login
             // we allow for no expiry (if lifetime is null)
             DateTime? expiry = (lifetime != null) ? created + lifetime : null;
 
-            var tokenDescriptor = new SecurityTokenDescriptor
+            var tokenDescriptor = new Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor
             {
-                AppliesToAddress = audience,
-                TokenIssuerName = issuer,
-                SigningCredentials = new HmacSigningCredentials(secretKey),
-                Lifetime = new Lifetime(created, expiry),
+                Audience = audience,
+                Issuer = issuer,
+                SigningCredentials =  new HmacSigningCredentials(secretKey),
+				IssuedAt = created,
+                Expires = expiry,
                 Subject = new ClaimsIdentity(claims),
             };
 

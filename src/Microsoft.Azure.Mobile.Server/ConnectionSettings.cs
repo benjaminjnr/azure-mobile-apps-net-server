@@ -22,65 +22,33 @@ namespace Microsoft.Azure.Mobile.Server
         /// <param name="connectionString">The actual connection string.</param>
         public ConnectionSettings(string name, string connectionString)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException("name");
-            }
-
-            if (connectionString == null)
-            {
-                throw new ArgumentNullException("connectionString");
-            }
-
-            this.name = name;
-            this.connectionString = connectionString;
+			this.name = name ?? throw new ArgumentNullException("name");
+            this.connectionString = connectionString ?? throw new ArgumentNullException("connectionString");
         }
 
         /// <summary>
         /// Gets or sets the name of the connection string.
         /// </summary>
         public string Name
-        {
-            get
-            {
-                return this.name;
-            }
+		{
+			get => this.name;
 
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("value");
-                }
+			set => this.name = value ?? throw new ArgumentNullException("value");
+		}
 
-                this.name = value;
-            }
-        }
+		/// <summary>
+		/// Gets or sets the actual connection string.
+		/// </summary>
+		public string ConnectionString
+		{
+			get => this.connectionString;
 
-        /// <summary>
-        /// Gets or sets the actual connection string.
-        /// </summary>
-        public string ConnectionString
-        {
-            get
-            {
-                return this.connectionString;
-            }
+			set => this.connectionString = value ?? throw new ArgumentNullException("value");
+		}
 
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("value");
-                }
-
-                this.connectionString = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the provider to be used by this connection string, e.g. <c>System.Data.SqlClient</c>.
-        /// </summary>
-        public string Provider { get; set; }
+		/// <summary>
+		/// Gets or sets the provider to be used by this connection string, e.g. <c>System.Data.SqlClient</c>.
+		/// </summary>
+		public string Provider { get; set; }
     }
 }

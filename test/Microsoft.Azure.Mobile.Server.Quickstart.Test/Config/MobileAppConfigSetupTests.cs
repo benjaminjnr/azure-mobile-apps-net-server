@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -47,7 +48,7 @@ namespace Microsoft.Azure.Mobile.Server.Config
         }
 
         [Theory]
-        [MemberData("AuthStatusData")]
+        [MemberData(nameof(AuthStatusData))]
         public async Task MobileAppAuth_Succeeds_AsPassiveAndActive(AuthenticationMode mode, bool isMiddlewareRegistered, bool isAuthenticated)
         {
             NotificationInstallation notification = new NotificationInstallation();

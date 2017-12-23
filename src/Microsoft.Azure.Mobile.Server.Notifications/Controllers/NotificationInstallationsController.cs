@@ -374,13 +374,15 @@ namespace Microsoft.Azure.Mobile.Server.Controllers
                 foreach (string tileName in notificationInstallation.SecondaryTiles.Keys)
                 {
                     NotificationSecondaryTile notificationTile = notificationInstallation.SecondaryTiles[tileName];
-                    if (installation.SecondaryTiles == null)
+#pragma warning disable CS0612 // Type or member is obsolete
+					if (installation.SecondaryTiles == null)
                     {
                         installation.SecondaryTiles = new Dictionary<string, WnsSecondaryTile>();
                     }
 
-                    installation.SecondaryTiles[tileName] = CreateWnsSecondaryTile(notificationTile);
-                }
+					installation.SecondaryTiles[tileName] = CreateWnsSecondaryTile(notificationTile);
+#pragma warning restore CS0612 // Type or member is obsolete
+				}
             }
             else if (notificationInstallation.Platform.Equals(ApplePlatform, StringComparison.OrdinalIgnoreCase))
             {
@@ -443,9 +445,11 @@ namespace Microsoft.Azure.Mobile.Server.Controllers
             {
                 InstallationTemplate installationTemplate = new InstallationTemplate();
 
-                // strip tags
-                installationTemplate.Tags = new List<string>();
-                installationTemplate.Body = notificationTemplate.Body;
+				// strip tags
+#pragma warning disable CS0612 // Type or member is obsolete
+				installationTemplate.Tags = new List<string>();
+#pragma warning restore CS0612 // Type or member is obsolete
+				installationTemplate.Body = notificationTemplate.Body;
                 if (platform == NotificationPlatform.Wns)
                 {
                     installationTemplate.Headers = notificationTemplate.Headers;

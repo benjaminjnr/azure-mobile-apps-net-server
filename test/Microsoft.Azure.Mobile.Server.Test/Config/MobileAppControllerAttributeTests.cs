@@ -139,12 +139,14 @@ namespace Microsoft.Azure.Mobile.Server.Config
         }
 
         [Theory]
-        [MemberData("CacheResponses")]
+        [MemberData(nameof(CacheResponses))]
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "notUsed", Justification = "Part of test data")]
-        public void SendAsync_PassesResponseThrough_IfNullCachePolicyProvider(HttpResponseMessage response, bool notUsed)
-        {
-            // Arrange
-            this.actionExecutedContext.Response = response;
+#pragma warning disable xUnit1026 //notUsed is part of test data
+		public void SendAsync_PassesResponseThrough_IfNullCachePolicyProvider(HttpResponseMessage response, bool notUsed)
+#pragma warning restore xUnit1026
+		{
+			// Arrange
+			this.actionExecutedContext.Response = response;
 
             // Act
             this.mobileAppActionFilterAttr.OnActionExecuted(this.actionExecutedContext);
@@ -154,8 +156,8 @@ namespace Microsoft.Azure.Mobile.Server.Config
             Assert.Equal(response, this.actionExecutedContext.Response);
         }
 
-        [Theory]
-        [MemberData("CallSetPolicy")]
+		[Theory]
+        [MemberData(nameof(CallSetPolicy))]
         public void SendAsync_CallsSetPolicy_IfCacheableMethodAndNoCacheHeadersPresent(HttpMethod method, HttpResponseMessage response, bool shouldCall)
         {
             // Arrange
@@ -171,7 +173,7 @@ namespace Microsoft.Azure.Mobile.Server.Config
         }
 
         [Theory]
-        [MemberData("CacheableHttpMethods")]
+        [MemberData(nameof(CacheableHttpMethods))]
         public void IsCacheableMethod_ReturnsTrueForCacheableMethods(HttpMethod method, bool expected)
         {
             // Act
@@ -182,7 +184,7 @@ namespace Microsoft.Azure.Mobile.Server.Config
         }
 
         [Theory]
-        [MemberData("CacheResponses")]
+        [MemberData(nameof(CacheResponses))]
         public void HasCachingHeaders_ReturnsTrueWhenCacheControlOrExpiresIsPresent(HttpResponseMessage response, bool expected)
         {
             // Act
